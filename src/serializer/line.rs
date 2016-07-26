@@ -51,7 +51,8 @@ fn as_boolean(b: &bool) -> String {
 
 impl Serializer for LineSerializer {
     fn serialize(&self, measurement: &Measurement) -> String {
-        let mut line = vec![escape(measurement.key)];
+        let mut line = Vec::with_capacity(2 + (measurement.fields.len() * 4 ) + (measurement.fields.len() * 4));
+        line.push(escape(measurement.key));
 
         for (tag, value) in measurement.tags.iter() {
             line.push(",".to_string());
@@ -83,7 +84,7 @@ impl Serializer for LineSerializer {
             _ => {}
         }
 
-        line.connect("")
+        line.join("")
     }
 }
 

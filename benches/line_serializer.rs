@@ -8,6 +8,7 @@ mod tests {
     use influent::serializer::line::{LineSerializer};
     use influent::serializer::Serializer;
     use influent::measurement::{Measurement, Value};
+
     use test::Bencher;
 
     #[bench]

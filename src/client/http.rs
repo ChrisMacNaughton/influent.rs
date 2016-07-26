@@ -93,7 +93,7 @@ impl<'a> Client for HttpClient<'a> {
         let host = self.get_host();
 
         for chunk in measurements.chunks(self.max_batch as usize) {
-            let mut lines = Vec::new();
+            let mut lines = Vec::with_capacity(chunk.len());
 
             for measurement in chunk {
                 lines.push(self.serializer.serialize(measurement));
@@ -117,7 +117,7 @@ impl<'a> Client for HttpClient<'a> {
                     password: self.credentials.password
                 }),
                 query: Some(query),
-                body: Some(lines.connect("\n"))
+                body: Some(lines.join("\n"))
             };
 
             match self.hurl.request(request) {
