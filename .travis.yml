@@ -2,10 +2,18 @@ sudo: false
 
 language: rust
 
+cache: cargo
+
 before_install:
     - wget http://influxdb.s3.amazonaws.com/influxdb_0.9.4.1_amd64.deb
     - dpkg-deb -x influxdb_0.9.4.1_amd64.deb $HOME
     - $HOME/opt/influxdb/versions/0.9.4.1/influxd > $HOME/influx.log 2>&1 &
+
+# load travis-cargo
+before_script:
+  - |
+      pip install 'travis-cargo<0.2' --user &&
+      export PATH=$HOME/.local/bin:$PATH
 
 after_script:
     - cat $HOME/influx.log
@@ -20,3 +28,15 @@ matrix:
         - rust: nightly
         - rust: beta
         - env: VAULT_BRANCH=head TRAVIS_CARGO_NIGHTLY_FEATURE=""
+
+# the main build
+script:
+  - |
+      travis-cargo build &&
+      travis-cargo test &&
+      travis-cargo bench
+
+env:
+  global:
+    # override the default `--features unstable` used for the nightly branch (optional)
+    - TRAVIS_CARGO_NIGHTLY_FEATURE=""
